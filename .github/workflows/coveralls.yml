@@ -1,0 +1,29 @@
+name: Coveralls
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cloning repo
+        uses: actions/checkout@v4
+      - name: Use Node.js 23.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23.x
+      - name: Install pnpm
+        run: npm install -g pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Generating coverage information
+        run: pnpm run coverage
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@v2.3.6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
