@@ -7,80 +7,100 @@ import { Funko } from '../models/FunkoPop.js';
 import { funkoGenre } from '../enums/FunkoGenre.js';
 import { funkoType } from '../enums/FunkoType.js';
 
+/**
+ * Common options for Funko Pop-related commands in the CLI.
+ * These options define the required and optional parameters 
+ * used when adding, modifying, or removing a Funko Pop.
+ */
 const commonFunkoOptions = {
   username: {
-    description: "Username",
+    description: "Username associated with the Funko Pop collection",
     alias: "u",
     type: "string" as const,
     demandOption: true,
   },
   id: {
-    description: "Funko ID",
+    description: "Unique identifier for the Funko Pop",
     alias: "i",
     type: "string" as const,
     demandOption: true,
   },
   name: {
-    description: "Funko Name",
+    description: "Name of the Funko Pop",
     alias: "n",
     type: "string" as const,
     demandOption: true,
   },
   description: {
-    description: "Funko Description",
+    description: "A brief description of the Funko Pop",
     alias: "d",
     type: "string" as const,
     demandOption: true,
   },
   type: {
-    description: "Funko Type",
+    description: "Type of Funko Pop",
     alias: "t",
     type: "string" as const,
     choices: Object.values(funkoType),
     demandOption: true,
   },
   genre: {
-    description: "Funko Genre",
+    description: "Genre associated with the Funko Pop",
     alias: "g",
     type: "string" as const,
     choices: Object.values(funkoGenre),
     demandOption: true,
   },
   franchise: {
-    description: "Funko Franchise",
+    description: "Franchise the Funko Pop belongs to",
     alias: "f",
     type: "string" as const,
     demandOption: true,
   },
   number: {
-    description: "Funko Number",
+    description: "Funko Pop's collectible number",
     alias: "num",
     type: "number" as const,
     demandOption: true,
   },
   exclusive: {
-    description: "Funko Exclusive",
+    description: "Indicates whether the Funko Pop is an exclusive edition",
     alias: "e",
     type: "boolean" as const,
     demandOption: true,
   },
   specialFeatures: {
-    description: "Funko Special Features",
+    description: "Special features (e.g., glow-in-the-dark, metallic finish)",
     alias: "s",
     type: "string" as const,
     demandOption: true,
   },
   marketValue: {
-    description: "Funko Market Value",
+    description: "Market value of the Funko Pop in USD",
     alias: "m",
     type: "number" as const,
     demandOption: true,
   },
 };
 
+/** 
+ * The server's hostname. 
+ */
 const SERVER_HOST = 'localhost';
+
+/** 
+ * The port on which the server listens for incoming TCP connections.
+ */
 const SERVER_PORT = 4000;
 
+/**
+ * Sends a request to the Funko Pop server using a TCP connection.
+ * This function establishes a connection with the server, transmits 
+ * the request, and processes the response asynchronously.
+ * 
+ * @param request - The request object containing the operation type 
+ *                  and associated Funko Pop data.
+ */
 const sendRequest = (request: RequestType) => {
   const client = net.createConnection({ host: SERVER_HOST, port: SERVER_PORT }, () => {
     client.write(JSON.stringify(request));
@@ -107,12 +127,16 @@ const sendRequest = (request: RequestType) => {
   });
 };
 
+// CLI command configuration using Yargs
 yargs(hideBin(process.argv))
+  /**
+   * CLI command to add a new Funko Pop to a user's collection.
+   */
   .command('add', 'Add a Funko', commonFunkoOptions, (argv) => {
     if (!argv.username) {
       console.error(chalk.red('Username is required'));
       process.exit(1);
-    };
+    }
 
     const funko = new Funko(
       argv.id as string,
@@ -133,11 +157,14 @@ yargs(hideBin(process.argv))
       funkoPop: funko
     });
   })
+  /**
+   * CLI command to modify an existing Funko Pop in a user's collection.
+   */
   .command('modify', 'Modify a Funko', commonFunkoOptions, (argv) => {
     if (!argv.username) {
       console.error(chalk.red('Username is required'));
       process.exit(1);
-    };
+    }
 
     const funko = new Funko(
       argv.id as string,
@@ -158,11 +185,14 @@ yargs(hideBin(process.argv))
       funkoPop: funko
     });
   })
+  /**
+   * CLI command to remove a Funko Pop from a user's collection.
+   */
   .command('remove', 'Remove a Funko', { username: commonFunkoOptions.username, id: commonFunkoOptions.id }, (argv) => {
     if (!argv.username) {
       console.error(chalk.red('Username is required'));
       process.exit(1);
-    };
+    }
 
     sendRequest({
       type: 'remove',
@@ -170,22 +200,28 @@ yargs(hideBin(process.argv))
       funkoPop: { id: argv.id }
     });
   })
+  /**
+   * CLI command to list all Funko Pops in a user's collection.
+   */
   .command('list', 'List all Funkos', { username: commonFunkoOptions.username }, (argv) => {
     if (!argv.username) {
       console.error(chalk.red('Username is required'));
       process.exit(1);
-    };
+    }
     
     sendRequest({
       type: 'list',
       username: argv.username as string,
     });
   })
+  /**
+   * CLI command to retrieve and display details of a specific Funko Pop.
+   */
   .command('show', 'Show details of a Funko', { username: commonFunkoOptions.username, id: commonFunkoOptions.id }, (argv) => {
     if (!argv.username) {
       console.error(chalk.red('Username is required'));
       process.exit(1);
-    };
+    }
     
     sendRequest({
       type: 'read',

@@ -6,19 +6,33 @@ import { Funko } from '../models/FunkoPop.js';
 
 const SERVER_PORT = 4000;
 
+/**
+ * Creates a TCP server that listens for client connections, processes Funko Pop requests,
+ * and responds accordingly. The server handles adding, updating, removing, retrieving,
+ * and listing Funko Pops for a specific user.
+ */
 const server = net.createServer((socket) => {
   console.log(chalk.blue('Client connected.'));
   
   let requestData = '';
-  
+
+  /**
+   * Event listener for incoming data from the client. The received chunks are accumulated
+   * into `requestData` until the transmission ends.
+   */
   socket.on('data', (chunk) => {
     requestData += chunk.toString();
   });
 
+  /**
+   * Event listener triggered when the client ends the data transmission.
+   * The server attempts to parse and process the received request.
+   */
   socket.on('end', () => {
     try {
       const request: RequestType = JSON.parse(requestData);
 
+      // Validate that the request contains a username
       if (!request.username) {
         console.log(chalk.red('Username is missing in the request.'));
         socket.write(JSON.stringify({ type: 'error', success: false, message: 'Username is required' }));
@@ -28,8 +42,10 @@ const server = net.createServer((socket) => {
 
       console.log(chalk.yellow('Request received:'), request);
 
+      // Initialize FunkoService for the given user
       const funkoService = new FunkoService(request.username);
 
+      // Process the request based on its type
       switch (request.type) {
         case 'add':
           if (!request.funkoPop) {
@@ -94,15 +110,25 @@ const server = net.createServer((socket) => {
     socket.end();
   });
 
+  /**
+   * Event listener for handling socket errors, such as connection failures.
+   * Displays an error message in the console.
+   */
   socket.on('error', (err) => {
     console.error(chalk.red('Connection error:'), err.message);
   });
 
+  /**
+   * Event listener triggered when the client disconnects from the server.
+   */
   socket.on('close', () => {
     console.log(chalk.gray('Client disconnected.'));
   });
 });
 
+/**
+ * Starts the TCP server and begins listening on the specified port.
+ */
 server.listen(SERVER_PORT, () => {
   console.log(chalk.green(`Server listening on port: ${SERVER_PORT}`));
 });
