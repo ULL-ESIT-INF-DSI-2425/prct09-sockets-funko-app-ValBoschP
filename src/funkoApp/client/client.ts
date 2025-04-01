@@ -101,7 +101,7 @@ const SERVER_PORT = 4000;
  * @param request - The request object containing the operation type 
  *                  and associated Funko Pop data.
  */
-const sendRequest = (request: RequestType) => {
+export const sendRequest = (request: RequestType) => {
   const client = net.createConnection({ host: SERVER_HOST, port: SERVER_PORT }, () => {
     client.write(JSON.stringify(request));
     client.end();
