@@ -127,10 +127,9 @@ yargs(hideBin(process.argv))
       argv.marketValue as number,
     );
 
-    // Enviar la solicitud con el username incluido
     sendRequest({
       type: 'add',
-      username: argv.username as string,  // Asegúrate de incluir el username aquí
+      username: argv.username as string,  
       funkoPop: funko
     });
   })
@@ -155,7 +154,7 @@ yargs(hideBin(process.argv))
 
     sendRequest({
       type: 'update',
-      username: argv.username as string,  // Asegúrate de incluir el username aquí
+      username: argv.username as string,  
       funkoPop: funko
     });
   })
@@ -164,10 +163,10 @@ yargs(hideBin(process.argv))
       console.error(chalk.red('Username is required'));
       process.exit(1);
     };
-    // Enviar la solicitud con el username incluido
+
     sendRequest({
       type: 'remove',
-      username: argv.username as string,  // Asegúrate de incluir el username aquí
+      username: argv.username as string, 
       funkoPop: { id: argv.id }
     });
   })
@@ -176,10 +175,10 @@ yargs(hideBin(process.argv))
       console.error(chalk.red('Username is required'));
       process.exit(1);
     };
-    // Enviar la solicitud con el username incluido
+    
     sendRequest({
       type: 'list',
-      username: argv.username as string,  // Asegúrate de incluir el username aquí
+      username: argv.username as string,
     });
   })
   .command('show', 'Show details of a Funko', { username: commonFunkoOptions.username, id: commonFunkoOptions.id }, (argv) => {
@@ -187,10 +186,10 @@ yargs(hideBin(process.argv))
       console.error(chalk.red('Username is required'));
       process.exit(1);
     };
-    // Enviar la solicitud con el username incluido
+    
     sendRequest({
       type: 'read',
-      username: argv.username as string,  // Asegúrate de incluir el username aquí
+      username: argv.username as string,
       funkoPop: { id: argv.id }
     });
   })

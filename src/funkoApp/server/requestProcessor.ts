@@ -2,9 +2,6 @@ import { RequestType, ResponseType } from '../utils/types.js';
 import { FunkoService } from '../services/FunkoService.js';
 import { Funko } from '../models/FunkoPop.js';
 
-/**
- * Procesa una solicitud y devuelve una respuesta.
- */
 export const processRequest = (request: RequestType, callback: (response: ResponseType) => void) => {
   if (!request.username) {
     return callback({ type: 'error', success: false, message: 'Username is required' });
@@ -12,12 +9,10 @@ export const processRequest = (request: RequestType, callback: (response: Respon
 
   const funkoService = new FunkoService(request.username); // Usar username de la solicitud
 
-  // Verificar que la solicitud tenga un FunkoPop
   if (!request.funkoPop) {
     return callback({ type: 'error', success: false, message: 'Not enough data' });
   }
 
-  // Verificar que el id esté presente en el FunkoPop
   if (!request.funkoPop.id) {
     return callback({
       type: 'error',
