@@ -95,11 +95,8 @@ const SERVER_PORT = 4000;
 
 /**
  * Sends a request to the Funko Pop server using a TCP connection.
- * This function establishes a connection with the server, transmits 
- * the request, and processes the response asynchronously.
  * 
- * @param request - The request object containing the operation type 
- *                  and associated Funko Pop data.
+ * @param request - The request object to send
  */
 export const sendRequest = (request: RequestType) => {
   const client = net.createConnection({ host: SERVER_HOST, port: SERVER_PORT }, () => {
@@ -127,6 +124,27 @@ export const sendRequest = (request: RequestType) => {
   });
 };
 
+/**
+ * Creates a Funko instance from CLI arguments.
+ * 
+ * @param argv - The parsed Yargs arguments
+ * @returns A new Funko instance
+ */
+function buildFunkoFromArgs(argv: any): Funko {
+  return new Funko(
+    argv.id as string,
+    argv.name as string,
+    argv.description as string,
+    argv.type as funkoType,
+    argv.genre as funkoGenre,
+    argv.franchise as string,
+    argv.number as number,
+    argv.exclusive as boolean,
+    argv.specialFeatures as string,
+    argv.marketValue as number,
+  );
+}
+
 // CLI command configuration using Yargs
 yargs(hideBin(process.argv))
   /**
@@ -138,23 +156,12 @@ yargs(hideBin(process.argv))
       process.exit(1);
     }
 
-    const funko = new Funko(
-      argv.id as string,
-      argv.name as string,
-      argv.description as string,
-      argv.type as funkoType,
-      argv.genre as funkoGenre,
-      argv.franchise as string,
-      argv.number as number,
-      argv.exclusive as boolean,
-      argv.specialFeatures as string,
-      argv.marketValue as number,
-    );
+    const funko = buildFunkoFromArgs(argv);
 
     sendRequest({
       type: 'add',
-      username: argv.username as string,  
-      funkoPop: funko
+      username: argv.username as string,
+      funkoPop: funko,
     });
   })
   /**
@@ -166,23 +173,12 @@ yargs(hideBin(process.argv))
       process.exit(1);
     }
 
-    const funko = new Funko(
-      argv.id as string,
-      argv.name as string,
-      argv.description as string,
-      argv.type as funkoType,
-      argv.genre as funkoGenre,
-      argv.franchise as string,
-      argv.number as number,
-      argv.exclusive as boolean,
-      argv.specialFeatures as string,
-      argv.marketValue as number,
-    );
+    const funko = buildFunkoFromArgs(argv);
 
     sendRequest({
       type: 'update',
-      username: argv.username as string,  
-      funkoPop: funko
+      username: argv.username as string,
+      funkoPop: funko,
     });
   })
   /**
@@ -196,7 +192,7 @@ yargs(hideBin(process.argv))
 
     sendRequest({
       type: 'remove',
-      username: argv.username as string, 
+      username: argv.username as string,
       funkoPop: { id: argv.id }
     });
   })
